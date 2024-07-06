@@ -36,4 +36,7 @@ export default defineConfig({
       config: { applyBaseStyles: false },
     }),
   ],
+  vite: {
+    envPrefix: 'API_'
+  }
 });
