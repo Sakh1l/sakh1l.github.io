@@ -1,14 +1,12 @@
 ---
 external: false
 draft: false
-title: AI in HR landscape. A progressive Thinking.
-description: How HR can think and resolve in a programtic with the help of AI.
-date: 2024-05-26
+title: Tamil Musing
+description: Thoughts Posting
+date: 2024-07-09
 ---
 
-fdkfjkdjfkdjfkld kldf 
-kjdkfdkfkdjfkldkfj
+சாட்டையின்றி யார் சுழற்றியது!
+விசை தீறாமல் சுழல்கிறது
+உலகம்!
 
-fkldjfkdjkfjdklfjkldjfkld
-
-fdkfjkdjfkldfkldjklfd
