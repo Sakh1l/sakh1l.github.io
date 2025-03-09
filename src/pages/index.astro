@@ -18,7 +18,7 @@ if (!apiKey) {
     <div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg">
       <p id="quote" class="text-lg italic">Loading quote...</p>
       <p id="author" class="text-right mt-2 font-bold"></p>
-      <pre id="debug-info" class="mt-4 text-sm text-gray-600 whitespace-pre-wrap"></pre>
+      <pre id="debug-info" class="mt-4 text-sm text-gray-600 whitespace-pre-wrap hidden"></pre>
     </div>
     
     
@@ -39,14 +39,15 @@ if (!apiKey) {
     const quoteElement = document.getElementById('quote');
     const authorElement = document.getElementById('author');
 
-    // Reset debug info
+    // Reset and hide debug info
     debugInfo.textContent = '';
-
-    // Check API key
+    debugInfo.classList.add('hidden');
+    
+    // Log API key status to debug info only
     const keyStatus = !!apiKey ? 'present' : 'missing';
-    debugInfo.textContent = `API Key status: ${keyStatus}`;
+    console.debug(`API Key status: ${keyStatus}`);
     if (apiKey) {
-      debugInfo.textContent += `\nAPI Key length: ${apiKey.length} characters`;
+      console.debug(`API Key length: ${apiKey.length} characters`);
     }
 
     if (!apiKey) {
@@ -55,21 +56,21 @@ if (!apiKey) {
     }
 
     try {
-      debugInfo.textContent += '\n\nStarting API request...';
+      console.debug('Starting API request...');
       const apiUrl = 'https://api.api-ninjas.com/v1/quotes';
-      debugInfo.textContent += `\nURL: ${apiUrl}`;
+      console.debug('URL:', apiUrl);
       
       // Verify we're using HTTPS in production
       if (window.location.protocol === 'https:' && !apiUrl.startsWith('https:')) {
         apiUrl = apiUrl.replace('http:', 'https:');
       }
 
-      debugInfo.textContent += `\nUsing protocol: ${window.location.protocol}`;
-      debugInfo.textContent += `\nFinal API URL: ${apiUrl}`;
+      console.debug('Using protocol:', window.location.protocol);
+      console.debug('Final API URL:', apiUrl);
 
       // Test network connectivity with proper error handling
       try {
-        debugInfo.textContent += '\nTesting API endpoint...';
+        console.debug('Testing API endpoint...');
         const testResponse = await fetch('https://api.api-ninjas.com/v1/quotes', {
           method: 'OPTIONS',
           headers: {
@@ -77,25 +78,25 @@ if (!apiKey) {
             'X-Api-Key': apiKey
           }
         });
-        debugInfo.textContent += `\nPreflight test: ${testResponse.ok ? 'Success' : 'Failed'} (Status: ${testResponse.status})`;
+        console.debug(`Preflight test: ${testResponse.ok ? 'Success' : 'Failed'} (Status: ${testResponse.status})`);
       } catch (networkError) {
         console.error('Network test error:', {
           name: networkError.name,
           message: networkError.message,
           stack: networkError.stack
         });
-        debugInfo.textContent += '\nPreflight test failed. Attempting direct request...';
+        console.debug('Preflight test failed. Attempting direct request...');
       }
 
       // Make the actual API request
-      debugInfo.textContent += '\nSending request with API key...';
+      console.debug('Sending request with API key...');
       // Create an AbortController for timeout
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       let response;
       try {
-        debugInfo.textContent += '\nInitiating fetch with timeout...';
+        console.debug('Initiating fetch with timeout...');
         response = await fetch(apiUrl, {
           method: 'GET',
           headers: {
@@ -109,7 +110,7 @@ if (!apiKey) {
 
         // If no-cors fails, try with cors
         if (!response.ok) {
-          debugInfo.textContent += '\nRetrying with CORS...';
+          console.debug('Retrying with CORS...');
           response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -123,7 +124,7 @@ if (!apiKey) {
         }
 
         clearTimeout(timeout);
-        debugInfo.textContent += '\nFetch completed successfully';
+        console.debug('Fetch completed successfully');
       } catch (fetchError) {
         clearTimeout(timeout);
         console.error('Fetch error details:', {
@@ -142,14 +143,17 @@ if (!apiKey) {
         throw new Error('No response received from fetch');
       }
 
-      debugInfo.textContent += `\nResponse received:\n  Status: ${response.status}\n  Status Text: ${response.statusText}`;
+      console.debug('Response received:', {
+        status: response.status,
+        statusText: response.statusText
+      });
       
       // Log response headers for debugging
       const headers = {};
       for (const [key, value] of response.headers) {
         headers[key] = value;
       }
-      debugInfo.textContent += `\n  Headers: ${JSON.stringify(headers, null, 2)}`;
+      console.debug('Response headers:', headers);
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
@@ -163,22 +167,22 @@ if (!apiKey) {
         // Try to get the response as JSON first
         try {
           data = await response.json();
-          debugInfo.textContent += '\nResponse parsed as JSON successfully';
+          console.debug('Response parsed as JSON successfully');
         } catch (jsonError) {
           // If JSON parsing fails, try to get the raw text
           const rawText = await response.text();
-          debugInfo.textContent += `\nRaw response: ${rawText}`;
+          console.debug('Raw response:', rawText);
           
           // Try parsing the raw text as JSON
           try {
             data = JSON.parse(rawText);
-            debugInfo.textContent += '\nRaw text parsed as JSON successfully';
+            console.debug('Raw text parsed as JSON successfully');
           } catch (parseError) {
             throw new Error(`Failed to parse response: ${parseError.message}. Raw response: ${rawText}`);
           }
         }
       } catch (error) {
-        debugInfo.textContent += '\nFalling back to default quote due to parsing error';
+        console.debug('Falling back to default quote due to parsing error');
         console.warn('Using fallback quote due to parsing error:', error);
         data = [fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)]];
       }
@@ -194,7 +198,7 @@ if (!apiKey) {
         throw new Error(`Invalid quote format. Response: ${JSON.stringify(data[0])}`);
       }
 
-      debugInfo.textContent += '\nQuote data validated successfully!';
+      console.debug('Quote data validated successfully!');
       quoteElement.textContent = `"${data[0].quote}"`;
       authorElement.textContent = `- ${data[0].author}`;
     } catch (error) {
@@ -205,33 +209,27 @@ if (!apiKey) {
         toString: error.toString()
       });
       quoteElement.textContent = 'Failed to load quote';
-      debugInfo.textContent += `\n\nError Details:\nType: ${error.name}\nMessage: ${error.message}\nFull error: ${error.toString()}`;
+      
+      // Only show debug info on error
+      debugInfo.textContent = `Error Details:\nType: ${error.name}\nMessage: ${error.message}`;
+      debugInfo.classList.remove('hidden');
+      
+      // Log detailed error info to console only
       if (error.stack) {
-        debugInfo.textContent += `\n\nStack trace:\n${error.stack}`;
+        console.debug('Stack trace:', error.stack);
       }
       
-      // Provide specific guidance based on error type
+      // Log error type for debugging
       if (error.message.includes('Network connectivity issue')) {
-        debugInfo.textContent += '\n\nTroubleshooting steps:\n1. Check your internet connection\n2. Verify if api.api-ninjas.com is accessible\n3. Check if a firewall is blocking the request';
+        console.debug('Network connectivity issue detected');
       } else if (error.message.includes('invalid or unauthorized')) {
-        debugInfo.textContent += '\n\nTroubleshooting steps:\n1. Verify your API key in the .env file\n2. Ensure the API key is correctly copied from API Ninjas dashboard\n3. Check if your API subscription is active';
-      } else if (error.message.includes('Failed to parse JSON')) {
-        debugInfo.textContent += '\n\nTroubleshooting steps:\n1. Check if the API response is valid JSON\n2. Verify if the API endpoint is correct\n3. Try the request again (sometimes APIs may return invalid responses)';
-      } else if (error.message.includes('Invalid response format')) {
-        debugInfo.textContent += '\n\nTroubleshooting steps:\n1. Verify that you are using the correct API endpoint\n2. Check if your API key has access to the quotes endpoint\n3. Try specifying a different category or no category';
+        console.debug('API key issue detected');
       }
     }
   }
   
   // Initial fetch
   fetchQuote();
-
-  // Add retry button
-  const retryButton = document.createElement('button');
-  retryButton.textContent = 'Retry';
-  retryButton.className = 'mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600';
-  retryButton.onclick = fetchQuote;
-  document.querySelector('.quote-container').appendChild(retryButton);
 </script>
 
 <style>
