@@ -1,0 +1,40 @@
+L---
+import PageLayout from "../layouts/PageLayout.astro";
+import { Image } from "astro:assets";
+
+const pageTitle = "About Me";
+---
+
+<PageLayout pageTitle={pageTitle}>
+  <main class="mb-16 sm:mb-24">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">{pageTitle}</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300">
+        Welcome to my corner of the internet! I'm passionate about technology and sharing knowledge.
+      </p>
+    </div>
+
+    <div class="prose dark:prose-invert max-w-none">
+      <section class="mb-8">
+        <h2>Who I Am</h2>
+        <p>
+          [Add your personal introduction and background here]
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2>What I Do</h2>
+        <p>
+          [Describe your work, interests, and expertise]
+        </p>
+      </section>
+
+      <section>
+        <h2>Get in Touch</h2>
+        <p>
+          [Add your preferred contact methods or social links]
+        </p>
+      </section>
+    </div>
+  </main>
+</PageLayout>

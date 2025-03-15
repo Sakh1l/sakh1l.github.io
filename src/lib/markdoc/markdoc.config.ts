@@ -111,23 +111,19 @@ export const config: Config = {
         return new Tag(this.render, { ...attributes }, children);
       },
     },
-    // if you want to customise default tags, this is where you'd do it
-    // after adding the code here, add an Astro component for this node
-    // in Renderer.astro component
-    // paragraph: {
-    //   render: "paragraph",
-    //   transform(node, config) {
-    //     const attributes = node.transformAttributes(config);
-    //     const children = node.transformChildren(config);
-    //     return new Tag(this.render, { ...attributes }, children);
-    //   },
-    // },
+    paragraph: {
+      render: "Paragraph",
+      transform(node, config) {
+        const attributes = node.transformAttributes(config);
+        const children = node.transformChildren(config);
+        return new Tag(this.render, { ...attributes }, children);
+      },
+    },
     fence: {
       render: "CodeBlock",
       attributes: {
         content: { type: String, render: false, required: true },
         language: { type: String, default: "typescript" },
-        // process determines whether or not markdoc processes tags inside the content of the code block
         process: { type: Boolean, render: false, default: false },
       },
       transform(node, config) {

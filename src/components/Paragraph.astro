@@ -1,0 +1,7 @@
+---
+const { class: className } = Astro.props;
+---
+
+<p class:list={["whitespace-pre-line", className]}>
+  <slot />
+</p>
