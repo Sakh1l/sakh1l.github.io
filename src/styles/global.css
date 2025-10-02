@@ -213,4 +213,39 @@
     }
 
     /* ------ REUSABLE UTILS - END ------ */
+
+    /* ------ COMPONENT STYLES - START ------ */
+    .hide-menu {
+        transform: translateX(-100%);
+    }
+    .show-menu {
+        transform: translateX(0%);
+    }
+
+    .gradient-link {
+        position: relative;
+        box-decoration-break: clone;
+        text-decoration: none;
+    }
+
+    .gradient-link:hover:after {
+        transform: translateZ(0) scale(1);
+    }
+
+    .gradient-link:after {
+        left: 0;
+        right: 0;
+        bottom: -2px;
+        content: "";
+        height: 2px;
+        position: absolute;
+        transform: translateZ(0) scaleX(0);
+        transform-origin: left center;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .quote-container {
+        border-left: 4px solid #3b82f6;
+    }
+    /* ------ COMPONENT STYLES - END ------ */
 }

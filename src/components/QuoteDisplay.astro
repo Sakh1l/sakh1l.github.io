@@ -1,0 +1,10 @@
+---
+import { getRandomQuote } from "@/lib/quotes";
+
+const quote = await getRandomQuote();
+---
+
+<div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg">
+  <p class="text-lg italic">"{quote.quote}"</p>
+  <p class="text-right mt-2 font-bold">- {quote.author}</p>
+</div>
