@@ -5,6 +5,9 @@ const quote = await getRandomQuote();
 ---
 
 <div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg">
-  <p class="text-lg italic">"{quote.quote}"</p>
-  <p class="text-right mt-2 font-bold">- {quote.author}</p>
+  <div class="text-center mb-3">
+    <span class="text-sm font-semibold text-gray-600">Kural #{quote.number}</span>
+  </div>
+  <p class="text-lg italic text-center mb-3" style="font-family: 'Tamil MN', 'Noto Sans Tamil', sans-serif; white-space: pre-line;">{quote.tamil}</p>
+  <p class="text-sm text-gray-700 text-center">"{quote.explanation}"</p>
 </div>

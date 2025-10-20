@@ -1,29 +1,42 @@
 export interface Quote {
-  quote: string;
-  author: string;
+  number: number;
+  tamil: string;
+  explanation: string;
 }
 
 const fallbackQuotes: Quote[] = [
-  { quote: 'The only way to do great work is to love what you do.', author: 'Steve Jobs' },
-  { quote: 'Innovation distinguishes between a leader and a follower.', author: 'Steve Jobs' },
-  { quote: 'Stay hungry, stay foolish.', author: 'Steve Jobs' },
-  { quote: 'Life is what happens to you while you\'re busy making other plans.', author: 'John Lennon' },
-  { quote: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt' },
+  { 
+    number: 1, 
+    tamil: 'அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு', 
+    explanation: 'As the letter A is the first of all letters, so the eternal God is first in the world' 
+  },
+  { 
+    number: 2, 
+    tamil: 'கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nநற்றாள் தொழாஅர் எனின்', 
+    explanation: 'What is the use of learning if one does not worship the feet of Him who is the source of all knowledge?' 
+  },
+  { 
+    number: 3, 
+    tamil: 'மலர்மிசை ஏகினான் மாணடி சேர்ந்தார்\nநிலமிசை நீடுவாழ் வார்', 
+    explanation: 'Those who have reached the feet of Him who rides on the flower will live long on earth' 
+  },
+  { 
+    number: 4, 
+    tamil: 'வேண்டுதல் வேண்டாமை இலானடி சேர்ந்தார்க்கு\nயாண்டும் இடும்பை இல', 
+    explanation: 'For those who have reached the feet of Him who is free from desire and aversion, there is no sorrow anywhere' 
+  },
+  { 
+    number: 5, 
+    tamil: 'இருள்சேர் இருவினையும் சேரா இறைவன்\nபொருள்சேர் புகழ்புரிந்தார் மாட்டு', 
+    explanation: 'The two-fold deeds that dwell in darkness will not approach those who have attained the glory of the Lord' 
+  }
 ];
 
 export async function getRandomQuote(): Promise<Quote> {
-  const apiKey = import.meta.env.API_NINJAS_KEY;
-  
-  if (!apiKey) {
-    console.warn('API_NINJAS_KEY is not set, using fallback quotes');
-    return getRandomFallbackQuote();
-  }
-
   try {
-    const response = await fetch('https://api.api-ninjas.com/v1/quotes', {
+    const response = await fetch('https://kural-api.fly.dev/random-quote', {
       method: 'GET',
       headers: {
-        'X-Api-Key': apiKey,
         'Accept': 'application/json'
       },
       signal: AbortSignal.timeout(5000) // 5 second timeout
@@ -35,21 +48,17 @@ export async function getRandomQuote(): Promise<Quote> {
 
     const data = await response.json();
     
-    if (!Array.isArray(data) || data.length === 0) {
-      throw new Error('Invalid response format from API');
-    }
-
-    const quote = data[0];
-    if (!quote?.quote || !quote?.author) {
-      throw new Error('Invalid quote format from API');
+    if (!data?.number || !data?.tamil || !data?.explanation) {
+      throw new Error('Invalid response format from Kural API');
     }
 
     return {
-      quote: quote.quote,
-      author: quote.author
+      number: data.number,
+      tamil: data.tamil,
+      explanation: data.explanation
     };
   } catch (error) {
-    console.warn('Failed to fetch quote from API, using fallback:', error);
+    console.warn('Failed to fetch quote from Kural API, using fallback:', error);
     return getRandomFallbackQuote();
   }
 }
