@@ -1,13 +1,103 @@
 ---
-import { getRandomQuote } from "@/lib/quotes";
-
-const quote = await getRandomQuote();
+// Fallback quote for SSR
+const fallbackQuote = {
+  number: 1,
+  tamil: 'அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு',
+  explanation: 'As the letter A is the first of all letters, so the eternal God is first in the world'
+};
 ---
 
-<div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg">
+<div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg" id="quote-container">
   <div class="text-center mb-3">
-    <span class="text-sm font-semibold text-gray-600">Kural #{quote.number}</span>
+    <span class="text-sm font-semibold text-gray-600">Kural #<span id="quote-number">{fallbackQuote.number}</span></span>
   </div>
-  <p class="text-lg italic text-center mb-3" style="font-family: 'Tamil MN', 'Noto Sans Tamil', sans-serif; white-space: pre-line;">{quote.tamil}</p>
-  <p class="text-sm text-gray-700 text-center">"{quote.explanation}"</p>
+  <p class="text-lg italic text-center mb-3" id="quote-tamil" style="font-family: 'Tamil MN', 'Noto Sans Tamil', sans-serif; white-space: pre-line;">{fallbackQuote.tamil}</p>
+  <p class="text-sm text-gray-700 text-center" id="quote-explanation">"{fallbackQuote.explanation}"</p>
+  <div class="text-center mt-3">
+    <button id="refresh-quote" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+      New Quote
+    </button>
+  </div>
 </div>
+
+<script>
+  interface Quote {
+    number: number;
+    tamil: string;
+    explanation: string;
+  }
+
+  async function fetchRandomQuote(): Promise<Quote> {
+    try {
+      const response = await fetch('https://kural-api.fly.dev/random-quote', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data?.number || !data?.tamil || !data?.explanation) {
+        throw new Error('Invalid response format from Kural API');
+      }
+
+      return {
+        number: data.number,
+        tamil: data.tamil,
+        explanation: data.explanation
+      };
+    } catch (error) {
+      console.warn('Failed to fetch quote from Kural API:', error);
+      // Return fallback quote
+      return {
+        number: 1,
+        tamil: 'அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு',
+        explanation: 'As the letter A is the first of all letters, so the eternal God is first in the world'
+      };
+    }
+  }
+
+  function updateQuoteDisplay(quote: Quote) {
+    const numberElement = document.getElementById('quote-number');
+    const tamilElement = document.getElementById('quote-tamil');
+    const explanationElement = document.getElementById('quote-explanation');
+    
+    if (numberElement) numberElement.textContent = quote.number.toString();
+    if (tamilElement) tamilElement.textContent = quote.tamil;
+    if (explanationElement) explanationElement.textContent = `"${quote.explanation}"`;
+  }
+
+  async function loadNewQuote() {
+    const button = document.getElementById('refresh-quote') as HTMLButtonElement;
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Loading...';
+    }
+
+    try {
+      const quote = await fetchRandomQuote();
+      updateQuoteDisplay(quote);
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'New Quote';
+      }
+    }
+  }
+
+  // Load a new quote when the page loads
+  document.addEventListener('DOMContentLoaded', loadNewQuote);
+
+  // Add click handler for the refresh button
+  document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById('refresh-quote');
+    if (button) {
+      button.addEventListener('click', loadNewQuote);
+    }
+  });
+</script>
