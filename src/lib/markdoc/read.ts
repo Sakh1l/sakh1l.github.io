@@ -59,11 +59,8 @@ export async function read<T extends z.ZodTypeAny>({
     filepath,
   });
 
-  const filename = filepath.split("/").pop();
-  if (typeof filename !== "string") {
-    throw new Error("Check what went wrong");
-  }
-  const fileNameWithoutExtension = filename.replace(/\.[^.]*$/, "");
+  const filename = path.basename(filepath);
+  const fileNameWithoutExtension = path.parse(filename).name;
 
   return {
     slug: fileNameWithoutExtension,

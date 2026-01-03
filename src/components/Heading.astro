@@ -11,19 +11,17 @@ const { level, children } = Astro.props;
 const headingText = children.length && typeof children[0] === 'string' ? children[0] : '';
 const id = slugify(headingText.toLowerCase());
 
-let Tag: HTMLTag = "h1";
-if (level === 2) {
-  Tag = "h2";
-} else if (level === 3) {
-  Tag = "h3";
-} else if (level === 4) {
-  Tag = "h4";
-} else if (level === 5) {
-  Tag = "h5";
-} else if (level === 6) {
-  Tag = "h6";
-}
-const shouldAddBeforePseudoStyle = ["h1", "h2"].includes(Tag)
+const headingTags: Record<1 | 2 | 3 | 4 | 5 | 6, HTMLTag> = {
+  1: 'h1',
+  2: 'h2',
+  3: 'h3',
+  4: 'h4',
+  5: 'h5',
+  6: 'h6'
+};
+
+const Tag: HTMLTag = headingTags[level];
+const shouldAddBeforePseudoStyle = level <= 2;
 ---
 
 <Tag id={id} class="group flex">

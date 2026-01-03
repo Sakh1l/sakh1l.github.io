@@ -3,7 +3,7 @@ import { blog } from "../lib/markdoc/frontmatter.schema";
 import { readAll } from "../lib/markdoc/read";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "../config";
 
-export const get = async () => {
+export const GET = async () => {
   const posts = await readAll({
     directory: "blog",
     frontmatterSchema: blog,
@@ -48,10 +48,16 @@ export const get = async () => {
     };
   });
 
-  return rss({
+  const rssContent = await rss({
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     site: baseUrl,
     items: rssItems,
+  });
+
+  return new Response(rssContent.body, {
+    headers: {
+      "Content-Type": "application/xml",
+    },
   });
 };
