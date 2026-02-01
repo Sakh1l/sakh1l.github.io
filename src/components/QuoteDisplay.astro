@@ -61,7 +61,7 @@ const fallbackQuote: Quote = {
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.warn('Failed to fetch quote from Kural API:', error);
+        // Failed to fetch quote from Kural API, using fallback
       }
       // Return fallback quote
       return {

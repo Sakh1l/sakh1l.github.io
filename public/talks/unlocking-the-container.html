@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Unlocking the Container - Sakhil Ahamed</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css"
+    />
+
+    <style>
+      .reveal h1,
+      .reveal h2,
+      .reveal h3 {
+        text-transform: none;
+      }
+      .highlight {
+        color: #bd93f9;
+        font-weight: bold;
+      }
+      .quote {
+        font-style: italic;
+        color: #f1fa8c;
+      }
+      table {
+        font-size: 0.8em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-background-color="#282a36">
+          <h1>Unlocking the Container</h1>
+          <h3 class="highlight">Let The Genie Out!!</h3>
+          <p>Presenter: <strong>Sakhil Ahamed</strong></p>
+          <p><small>ChennaiFoss Jan 2026 Meetup</small></p>
+        </section>
+
+        <section>
+          <h2>Why This Talk?</h2>
+          <ul>
+            <li>Containers are everywhere</li>
+            <li>"Lightweight VMs" is misleading</li>
+            <li>Understanding fundamentals removes fear</li>
+            <li class="fragment highlight">
+              Ground Rule: No Docker/K8s knowledge required
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <section>
+            <h2>What Does Linux Actually Do?</h2>
+            <ul>
+              <li>
+                Linux runs programs → Programs become
+                <span class="highlight">Processes</span>
+              </li>
+              <li>Kernel manages processes</li>
+              <li>Everything starts with a process</li>
+            </ul>
+          </section>
+          <section>
+            <h2>What Is a Process?</h2>
+            <ul>
+              <li>A running program</li>
+              <li>Memory & PID (Process ID)</li>
+              <li>Kernel-managed execution context</li>
+              <li class="fragment">
+                <strong>The catch:</strong> By default, everyone shares
+                everything (Network, Filesystem, Hostname)
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h2>Linux's Big Idea</h2>
+          <p class="quote">
+            "Don't virtualize machines. Virtualize resources."
+          </p>
+          <p>
+            This led to the creation of
+            <span class="highlight">Namespaces</span>.
+          </p>
+        </section>
+
+        <section>
+          <h2>What Is a Namespace?</h2>
+          <ul>
+            <li>Wraps a global resource to provide isolation</li>
+            <li><strong>Same namespace:</strong> Shared view</li>
+            <li><strong>Different namespace:</strong> Isolated view</li>
+            <li>
+              Each process lives in exactly ONE instance of each namespace type
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The Seven Namespace Types</h2>
+          <div style="display: flex; justify-content: space-around">
+            <ul>
+              <li>1. Mount</li>
+              <li>2. UTS</li>
+              <li>3. IPC</li>
+              <li>4. PID</li>
+            </ul>
+            <ul>
+              <li>5. Network</li>
+              <li>6. User</li>
+              <li>7. Cgroup</li>
+            </ul>
+          </div>
+          <p>
+            <small>Visible at <code>/proc/&lt;PID&gt;/ns/</code></small>
+          </p>
+        </section>
+
+        <section>
+          <section>
+            <h2>UTS & Mount</h2>
+            <p><strong>UTS:</strong> Isolates Hostname and Domain name.</p>
+            <p>
+              <strong>Mount:</strong> Isolates mount points and filesystem
+              views.
+            </p>
+          </section>
+          <section>
+            <h3>Why Mount Matters</h3>
+            <ul>
+              <li>More powerful than <code>chroot</code></li>
+              <li>Rearrange filesystem views</li>
+              <li>Foundation of container filesystems</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <h2>Network & IPC</h2>
+          <p>
+            <strong>IPC:</strong> Isolates shared memory and message queues.
+          </p>
+          <p>
+            <strong>Network:</strong> Isolates interfaces, routing tables, and
+            ports.
+          </p>
+          <ul class="fragment">
+            <li>Allows multiple containers to use port 80</li>
+            <li>Uses Virtual Ethernet (veth) and bridges</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>PID Namespace</h2>
+          <ul>
+            <li>Isolates Process IDs</li>
+            <li>
+              <strong>Hierarchical:</strong> Parent sees child; child cannot see
+              parent
+            </li>
+            <li>
+              <strong>PID 1 is special:</strong> If it exits, the namespace dies
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>User Namespace</h2>
+          <h3 class="highlight">The Game Changer</h3>
+          <ul>
+            <li>Isolates User and Group IDs</li>
+            <li>
+              <strong>Fake Root:</strong> UID 0 inside, Non-root UID outside
+            </li>
+            <li>Enables <span class="highlight">Rootless Containers</span></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Containers vs VMs</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Virtual Machines</th>
+                <th>Containers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Separate kernels</td>
+                <td>One shared kernel</td>
+              </tr>
+              <tr>
+                <td>Heavy / Slow to start</td>
+                <td>Fast / Lightweight</td>
+              </tr>
+              <tr>
+                <td>Hardware Virtualization</td>
+                <td>Selective Resource Isolation</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>Final Takeaways</h2>
+          <ul>
+            <li>Namespaces isolate global resources</li>
+            <li>Containers are composed, not invented</li>
+            <li>Linux is the real container engine</li>
+          </ul>
+          <div class="fragment" style="margin-top: 50px">
+            <p class="quote">
+              "Containers are not machines. They are processes living in
+              carefully curated realities."
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: "c/t",
+        transition: "slide",
+      });
+    </script>
+  </body>
+</html>

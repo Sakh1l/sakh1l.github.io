@@ -45,3 +45,15 @@ export const blog = z.discriminatedUnion("external", [
 export const project = baseSchema.extend({
   url: z.string(),
 });
+
+export const talk = baseSchema.extend({
+  event: z.string({
+    required_error: "Required frontmatter missing: event",
+    invalid_type_error: "event must be a string",
+  }),
+  slides: z.string({
+    required_error: "Required frontmatter missing: slides",
+    invalid_type_error: "slides must be a string",
+  }),
+  description: z.optional(z.string()),
+});

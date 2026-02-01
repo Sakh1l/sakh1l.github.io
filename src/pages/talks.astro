@@ -1,0 +1,110 @@
+L---
+import { readAll } from "../lib/markdoc/read";
+import { talk } from "../lib/markdoc/frontmatter.schema";
+import PageLayout from "../layouts/PageLayout.astro";
+import PageMeta from "../components/PageMeta.astro";
+import { SITE_TITLE } from "../config";
+
+const talks = await readAll({
+  directory: "talks",
+  frontmatterSchema: talk,
+});
+
+const sortedTalks = talks
+  .filter((t) => t.frontmatter.draft !== true)
+  .sort(
+    (a, b) =>
+      new Date(b.frontmatter.date).valueOf() -
+      new Date(a.frontmatter.date).valueOf()
+  );
+
+const featuredTalks = sortedTalks.filter((t) => t.frontmatter.featured === true);
+const regularTalks = sortedTalks.filter((t) => t.frontmatter.featured !== true);
+---
+
+<PageLayout>
+  <PageMeta title={`Talks | ${SITE_TITLE}`} slot="meta" />
+  <section slot="main">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">Talks</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300">
+        Presentations and slides from conferences, meetups, and events.
+      </p>
+    </div>
+
+    {sortedTalks.length === 0 ? (
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+        <p>No talks available yet. Check back soon!</p>
+      </div>
+    ) : (
+      <ul>
+        {[...featuredTalks, ...regularTalks].map((talk) => {
+          const formattedDate = new Date(
+            talk.frontmatter.date
+          ).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+          return (
+            <li
+              class={`grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mb-6 md:gap-2 items-start p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600 transition-colors ${
+                talk.frontmatter.featured === true
+                  ? "ring-2 ring-blue-400 dark:ring-blue-500"
+                  : ""
+              }`}
+            >
+              <div class="flex-1">
+                <div class="flex items-start gap-3 mb-2">
+                  {talk.frontmatter.featured === true && (
+                    <span class="inline-block px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-900 rounded shrink-0 mt-1">
+                      Featured
+                    </span>
+                  )}
+                  <div class="flex-1">
+                    <a
+                      href={talk.frontmatter.slides}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="unset
+                        transition-[background-size] duration-300 
+                        bg-gradient-to-r bg-left-bottom bg-no-repeat
+                        bg-[length:0%_55%] hover:bg-[length:100%_55%] dark:bg-[length:0%_2px] hover:dark:bg-[length:100%_2px]
+                        from-primary-blue to-primary-blue dark:from-primary-blue dark:to-primary-blue
+                        text-xl font-semibold"
+                    >
+                      {talk.frontmatter.title}
+                    </a>
+                  </div>
+                </div>
+                <div class="text-gray-600 dark:text-gray-300 mb-2">
+                  <span class="font-medium">{talk.frontmatter.event}</span>
+                </div>
+                {talk.frontmatter.description && (
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mb-2">
+                    {talk.frontmatter.description}
+                  </p>
+                )}
+                <div class="text-text-muted text-sm flex items-center gap-4">
+                  <time datetime={talk.frontmatter.date.toISOString()}>
+                    <i class="fa-solid fa-calendar mr-1"></i>
+                    {formattedDate}
+                  </time>
+                  <a
+                    href={talk.frontmatter.slides}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary-blue hover:underline"
+                  >
+                    <i class="fa-solid fa-external-link mr-1"></i>
+                    View Slides
+                  </a>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+  </section>
+</PageLayout>
