@@ -17,8 +17,6 @@ date: 2025-09-25
 
 ## Introduction
 
-<br>
-
 Emacs is one of the most powerful and flexible text editors available, often praised for its extensibility and deep customization options. This guide is designed for absolute beginners, providing essential knowledge to get started with Emacs and utilize its core features effectively.
 
 ---
