@@ -4,6 +4,8 @@ import YouTubeEmbed from "./YouTubeEmbed.astro";
 import TweetEmbed from "./TweetEmbed.astro";
 import CodePenEmbed from "./CodePenEmbed.astro";
 import GitHubGistEmbed from "./GitHubGistEmbed.astro";
+import Heading from "./Heading.astro";
+import Paragraph from "./Paragraph.astro";
 
 type Props = {
   content: any;
@@ -12,6 +14,14 @@ type Props = {
 const { content } = Astro.props;
 
 const components = {
+  Heading: {
+    Component: Heading,
+    props: {},
+  },
+  Paragraph: {
+    Component: Paragraph,
+    props: {},
+  },
   YouTubeEmbed: {
     Component: YouTubeEmbed,
     props: {},
