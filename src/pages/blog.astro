@@ -22,6 +22,13 @@ const sortedPosts = posts
 <PageLayout>
   <PageMeta title={`Blog | ${SITE_TITLE}`} slot="meta" />
   <section slot="main">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">Blog</h1>
+      <p class="text-lg text-text-muted">Notes on learning, technology, and life.</p>
+    </div>
+    {sortedPosts.length === 0 ? (
+      <p>No posts published yet. Check back soon!</p>
+    ) : (
     <ul>
       {
         sortedPosts.map((post) => {
@@ -39,6 +46,7 @@ const sortedPosts = posts
                   <a
                     href={post.frontmatter.url}
                     target="_blank"
+                    rel="noopener noreferrer"
                     class="unset
                         transition-[background-size] duration-300 
                         bg-gradient-to-r bg-left-bottom bg-no-repeat
@@ -53,7 +61,7 @@ const sortedPosts = posts
                   </a>
                 ) : (
                   <a
-                    href={`/blog/${post.slug}`}
+                    href={`/blog/${post.slug}/`}
                     class="unset
                         transition-[background-size] duration-300 
                         bg-gradient-to-r bg-left-bottom bg-no-repeat
@@ -75,5 +83,6 @@ const sortedPosts = posts
         })
       }
     </ul>
+    )}
   </section>
 </PageLayout>

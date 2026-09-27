@@ -40,7 +40,7 @@ const { title, date, showBlogHeader = false } = Astro.props;
             </span>
           </h1>
           {date && (
-            <time class="block mb-[2em] text-text-muted">
+            <time datetime={date.toISOString()} class="block mb-[2em] text-text-muted">
               {new Date(date).toLocaleDateString("en-us", {
                 year: "numeric",
                 month: "short",

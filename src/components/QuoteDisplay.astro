@@ -11,10 +11,10 @@ const fallbackQuote: Quote = {
 
 <div class="quote-container my-8 p-4 bg-dark-blue-100 rounded-lg" id="quote-container">
   <div class="text-center mb-3">
-    <span class="text-sm font-semibold text-gray-600">Kural #<span id="quote-number">{fallbackQuote.number}</span></span>
+    <span class="text-sm font-semibold text-text-muted">Kural #<span id="quote-number">{fallbackQuote.number}</span></span>
   </div>
   <p class="text-lg italic text-center mb-3" id="quote-tamil" style="font-family: 'Tamil MN', 'Noto Sans Tamil', sans-serif; white-space: pre-line;">{fallbackQuote.tamil}</p>
-  <p class="text-sm text-gray-700 text-center" id="quote-explanation">"{fallbackQuote.explanation}"</p>
+  <p class="text-sm text-text-body text-center" id="quote-explanation">"{fallbackQuote.explanation}"</p>
   <div class="text-center mt-3">
     <button id="refresh-quote" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
       New Quote

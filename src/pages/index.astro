@@ -4,13 +4,42 @@ import PageLayout from "@/layouts/PageLayout.astro";
 import Intro from "@/components/Intro.astro";
 import AboutTheTheme from "@/components/AboutTheTheme.astro";
 import QuoteDisplay from "@/components/QuoteDisplay.astro";
+import { blog } from "@/lib/markdoc/frontmatter.schema";
+import { readAll } from "@/lib/markdoc/read";
 import { SITE_TITLE } from "@/config";
+
+const latestPosts = (await readAll({ directory: "blog", frontmatterSchema: blog }))
+  .filter((post) => !post.frontmatter.draft)
+  .sort((a, b) => b.frontmatter.date.valueOf() - a.frontmatter.date.valueOf())
+  .slice(0, 3);
 ---
 
 <PageLayout>
-  <PageMeta title={`${SITE_TITLE}`} slot="meta" />
+  <PageMeta title={SITE_TITLE} slot="meta" />
   <Fragment slot="main">
     <Intro />
+    {latestPosts.length > 0 && (
+      <section class="mb-8" aria-labelledby="latest-posts-heading">
+        <h2 id="latest-posts-heading" class="text-2xl font-bold text-text-heading mb-3">Latest posts</h2>
+        <ul>
+          {latestPosts.map((post) => (
+            <li class="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mb-3 md:gap-2 items-start">
+              <a
+                href={post.frontmatter.external ? post.frontmatter.url : `/blog/${post.slug}/`}
+                target={post.frontmatter.external ? "_blank" : undefined}
+                rel={post.frontmatter.external ? "noopener noreferrer" : undefined}
+              >
+                {post.frontmatter.title}
+              </a>
+              <time class="text-text-muted text-sm italic pt-1" datetime={post.frontmatter.date.toISOString()}>
+                {post.frontmatter.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })}
+              </time>
+            </li>
+          ))}
+        </ul>
+        <a href="/blog/">View all posts →</a>
+      </section>
+    )}
     <QuoteDisplay />
     <AboutTheTheme />
   </Fragment>

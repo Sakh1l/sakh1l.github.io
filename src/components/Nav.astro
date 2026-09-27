@@ -4,7 +4,7 @@ import { navigationItems } from "@/lib/navigation";
 ---
 
 <Fragment>
-  <nav class="hidden md:inline">
+  <nav class="hidden md:inline" aria-label="Main navigation">
     <section class="text-text-bold">
       <ul class="unset flex gap-4 [&>li]:p-0">
         {navigationItems.map((item) => (
@@ -13,22 +13,20 @@ import { navigationItems } from "@/lib/navigation";
       </ul>
     </section>
   </nav>
-  <nav class="md:hidden">
-    <button id="mobile-menu-open">
-      <i class="fa-solid fa-bars" aria-hidden="true" title="Open mobile menu"
-      ></i>
+  <nav class="md:hidden" aria-label="Mobile navigation">
+    <button id="mobile-menu-open" type="button" class="inline-flex min-h-11 min-w-11 -ml-3 items-center justify-center" aria-controls="mobile-menu" aria-expanded="false">
+      <i class="fa-solid fa-bars" aria-hidden="true" title="Open mobile menu"></i>
       <span class="fa-sr-only">Open mobile menu</span>
     </button>
     <section
       id="mobile-menu"
       class="hide-menu fixed top-0 left-0 z-10 w-full h-full transition-transform bg-black/75 border-primary-blue"
+      aria-hidden="true"
+      inert
     >
       <div class="bg-bg-body w-[75%] h-full drop-shadow-2xl">
-        <button id="mobile-menu-close" class="px-6 h-[5rem] text-lg xml-[1px]">
-          <i
-            class="fa-solid fa-xmark"
-            aria-hidden="true"
-            title="Close mobile menu"></i>
+        <button id="mobile-menu-close" type="button" class="px-6 h-[5rem] text-lg xml-[1px]">
+          <i class="fa-solid fa-xmark" aria-hidden="true" title="Close mobile menu"></i>
           <span class="fa-sr-only">Close mobile menu</span>
         </button>
         <ul class="unset flex flex-col text-text-bold gap-4 [&>li]:p-0 px-6">
@@ -48,19 +46,40 @@ import { navigationItems } from "@/lib/navigation";
     const menuElement = document.querySelector<HTMLElement>("#mobile-menu");
 
     if (!openButton || !closeButton || !menuElement) return;
+    let previousOverflow = "";
 
-    openButton.addEventListener("click", () => {
-      menuElement.classList.remove("hide-menu");
-      menuElement.classList.add("show-menu");
-      document.body.style.overflow = "hidden";
+    function setOpen(open: boolean): void {
+      if (!openButton || !closeButton || !menuElement) return;
+      menuElement.classList.toggle("show-menu", open);
+      menuElement.classList.toggle("hide-menu", !open);
+      menuElement.inert = !open;
+      menuElement.setAttribute("aria-hidden", String(!open));
+      openButton.setAttribute("aria-expanded", String(open));
+      if (open) {
+        previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        closeButton.focus();
+      } else {
+        document.body.style.overflow = previousOverflow;
+        openButton.focus();
+      }
+    }
+
+    openButton.addEventListener("click", () => setOpen(true));
+    closeButton.addEventListener("click", () => setOpen(false));
+    menuElement.addEventListener("click", (event) => {
+      if (event.target === menuElement) setOpen(false);
     });
-
-    closeButton.addEventListener("click", () => {
-      menuElement.classList.remove("show-menu");
-      menuElement.classList.add("hide-menu");
-      document.body.style.overflow = "auto";
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && openButton.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+      }
     });
   }
 
-  document.addEventListener("DOMContentLoaded", setupMobileMenu);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupMobileMenu, { once: true });
+  } else {
+    setupMobileMenu();
+  }
 </script>

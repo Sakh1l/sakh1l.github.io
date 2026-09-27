@@ -33,6 +33,7 @@ const {
 const { meta, og, twitter } = getBlogPostMeta({
   title: title || SITE_TITLE,
   description: description || SITE_DESCRIPTION,
+  canonicalUrl: pagePath ? new URL(pagePath, SITE_URL).toString() : undefined,
   pageUrl: pagePath ? new URL(pagePath, SITE_URL).toString() : undefined,
   authorName: MY_NAME,
   publishDate,

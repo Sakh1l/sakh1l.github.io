@@ -1,55 +1,41 @@
 # Personal Blog
 
-A modern personal blog built with [Astro](https://astro.build), [TypeScript](https://www.typescriptlang.org/), and [Tailwind CSS](https://tailwindcss.com/).
+Sakhil's Astro blog, published at [blog.sakhil.in](https://blog.sakhil.in/) through [GitHub Pages](https://github.com/Sakh1l/sakh1l.github.io/actions). The existing Bubblegum theme and layout are preserved.
 
-## 🚀 Quick Start
+## Local development
 
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
+npm ci
 npm run dev
-
-# Build for production
 npm run build
-
-# Preview production build
 npm run preview
 ```
 
-## 📁 Project Structure
+## Publishing a blog post
 
-```
-├── content/          # Blog posts, projects, and talks
-│   ├── blog/         # Blog post content
-│   ├── projects/     # Project showcases
-│   └── talks/        # Talk presentations
-├── public/           # Static assets
-├── src/
-│   ├── components/   # Reusable UI components
-│   ├── layouts/      # Page layouts
-│   ├── pages/        # Route pages
-│   ├── styles/       # CSS styles
-│   ├── lib/          # Utility functions
-│   └── scripts/      # Build scripts
-└── astro.config.mjs  # Astro configuration
-```
+1. Add a Markdown file to **this repository's** `content/blog/` directory. Files in other repositories (including `myblog` and `personalblog`) are not read by this site's build.
+2. Include the required frontmatter. The date must be an **unquoted** `YYYY-MM-DD` value; `external: false` publishes a local article. Use `draft: true` to keep an unfinished article off the index, RSS feed, and generated pages.
 
-## 🔧 Configuration
+   ```md
+   ---
+   external: false
+   draft: false
+   title: My post title
+   description: A short description of the article.
+   date: 2026-09-27
+   ---
 
-1. Copy `.env.example` to `.env`
-2. Update the environment variables as needed
+   The article text goes here.
+   ```
 
-## 📝 Adding Content
+3. Run `npm run build` and check that the route appears under `dist/blog/<filename>/index.html`. The filename becomes the URL slug, including its capitalization.
+4. Push the change to `main` (or merge a reviewed PR). The [Deploy to GitHub Pages workflow](https://github.com/Sakh1l/sakh1l.github.io/actions/workflows/deploy.yml) builds and publishes the site. Check that the workflow succeeds, then visit `https://blog.sakhil.in/blog/` and the article URL.
 
-- Add blog posts as Markdown files in `content/blog/`
-- Add projects in `content/projects/`
-- Add talks in `content/talks/`
+The homepage's **Latest posts** section, Blog index, and RSS feed all derive from the same published-post list. The existing `hello-world.md` is a draft placeholder and is intentionally not published. The older `myblog` repository contains one authored Docker article plus template examples; migrate a post explicitly when ready rather than publishing all starter content. The archived Docker article ends mid-thought, so review it before republishing.
 
-## 🛠️ Tech Stack
+## Other content
 
-- [Astro](https://astro.build) - Static Site Generator
-- [TypeScript](https://www.typescriptlang.org/) - Type Safety
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [Markdoc](https://markdoc.dev/) - Content Processing
+- Projects: Markdown files in `content/projects/`
+- Talks: Markdown files in `content/talks/`
+- Static assets: `public/`
+- Routes and components: `src/pages/` and `src/components/`

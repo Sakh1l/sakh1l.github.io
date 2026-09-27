@@ -22,6 +22,10 @@ const sortedProjects = projects
 <PageLayout>
   <PageMeta title={`Projects | ${SITE_TITLE}`} slot="meta" />
   <section slot="main">
+    <h1 class="text-4xl font-bold mb-4">Projects</h1>
+    {sortedProjects.length === 0 ? (
+      <p>I'm still curating this page. In the meantime, you can <a href="https://github.com/Sakh1l">explore my projects on GitHub</a>.</p>
+    ) : (
     <ul>
       {
         sortedProjects.map((project) => {
@@ -38,6 +42,7 @@ const sortedProjects = projects
                 <a
                   href={project.frontmatter.url}
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="unset
                       transition-[background-size] duration-300 
                       bg-gradient-to-r bg-left-bottom bg-no-repeat
@@ -61,5 +66,6 @@ const sortedProjects = projects
         })
       }
     </ul>
+    )}
   </section>
 </PageLayout>

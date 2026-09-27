@@ -42,6 +42,7 @@
       if (!this.iconElem) return;
 
       // Set initial state
+      this.toggle?.setAttribute("aria-checked", String(this.currentMode === "dark"));
       if (this.currentMode === "dark") {
         this.iconElem.classList.remove("light");
         this.iconElem.classList.add("dark");
@@ -66,6 +67,7 @@
       // Update theme
       this.updateHTMLTheme(newMode);
       this.updateStorageTheme(newMode);
+      this.toggle?.setAttribute("aria-checked", String(newMode === "dark"));
       
       // Add animation class if not present
       if (!this.iconElem.classList.contains("duration-300")) {
